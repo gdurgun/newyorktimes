@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-108098681-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-108098681-2');
+</script>
+<link rel="stylesheet" href="landingpage.css">
+<title>Page Title</title>
+</head>
+<body>
+
+<div class="site-container" id="site-container">
+<div class="searchField">
+<div class="container">
+<input type="text" name="search" id="searchTxt" class="inputter" placeholder="Search an article...">
+<div class="message">&nbsp;</div>
+</div>
+<div class="timesresult">
+  <div id="NYlogo" class="hidden"><img src="https://s1.nyt.com/mwcm/assets/uuid/a88254f8-9272-4960-959f-733f689edd44"></div>
+<div class="title">&nbsp;</div>
+<div class="shortText">&nbsp;</div>
+<div><a id="link" class="hidden">Read the article</a></div>
+</div>
+</div>
+</div>
+<div class="pinklayer"></div>
+<div class="background"></div>
+<script type="text/javascript">
+  var counter = 0 ;
+  var page = 0 ;
+
+searchTxt.addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) {
+        var searchInput = document.getElementById('searchTxt').value;   
+        var api = "https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=c95c197a6dd842d0a29723eefdad7287&q=";
+        var url = api + searchInput + '&page=' + page;
+        fetch(url)  
+          .then(function(response) {
+              return response.json();
+            })
+          .then(function(response) {
+            console.log(response);
+            document.querySelector('.title').innerHTML = response.response.docs[counter].headline.print_headline;
+            document.querySelector('.shortText').innerHTML = response.response.docs[counter].snippet;
+            
+            var url2NY = response.response.docs[counter].web_url;
+            document.getElementById("link").setAttribute("href",url2NY);
+            
+            document.getElementById("NYlogo").classList.remove('hidden');
+            document.getElementById("link").classList.remove('hidden');
+            document.getElementById("link").classList.add('url');
+            document.querySelector('.message').innerHTML = 'Press enter again for next article';
+
+            if (response.response.docs[counter].multimedia.length > 0) {
+              var imageUrl = response.response.docs[counter].multimedia[0].url;
+              var urlString = 'url(https://www.nytimes.com/' + imageUrl;
+              document.querySelector('.background').style.backgroundImage = urlString;
+              document.querySelector('.searchField').style.backgroundColor = "transparent";
+            } else {
+              document.querySelector('.background').style.backgroundImage = null;
+              document.querySelector('.searchField').style.backgroundColor = "#F3007B";
+            }
+
+            })
+          counter++;
+
+          if (counter > 9) {
+            page++;
+            counter = 0;
+          }
+      }
+  });  
+</script>
+
+
+</body>
+</html>
